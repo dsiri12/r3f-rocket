@@ -15,10 +15,12 @@ body {
 h1 {
     font-family: Helvetica;
     font-weight: 800;
-    font-size: 20em;
+    font-size: 10em;
     text-align: center;
     color: hotpink;
     position: absolute;
     top: 0;
     left: 0;
+    margin: 0;
+    padding: 0;
 }
