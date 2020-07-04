@@ -1,11 +1,24 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
+import * as THREE from 'three'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Canvas, extend, useThree , useFrame} from 'react-three-fiber';
 import { useSpring, a } from 'react-spring/three';
 
 import './style.css'
 
 extend({ OrbitControls });
+
+const SpaceShip = () => {
+  const [model, setModel] = useState();
+
+  useEffect(() => {
+    new GLTFLoader().load('/scene.gltf', setModel);
+  })
+
+  return model ? <primitive object={model.scene} /> : null
+  
+}
 
 const Controls = () => {
   const orbitRef = useRef();
@@ -27,8 +40,8 @@ const Controls = () => {
 }
 
 const Plane = () => (
-  <mesh>
-    <planeBufferGeometry attach="geometry" args={[100, 100, 1]} />
+  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]} receiveShadow>
+    <planeBufferGeometry attach="geometry" args={[100, 100]} />
     <meshPhysicalMaterial attach="material" color="white" />
   </mesh>
 )
@@ -53,19 +66,34 @@ const Box = () => {
     onPointerOut={() => setHovered(false)}
     onClick={() => setActive(!active)}
     scale={props.scale}
+    castShadow
   >
-      <ambientLight />
-      <spotLight position={[0, 5, 10]} />
       <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
       <a.meshPhysicalMaterial attach="material" color={props.color} />
     </a.mesh>
   );
 }
 
-export default () => (
-  <Canvas>
+  export default () => (
+    <>
+    <h1>Hello Everyone!</h1>
+
+    <Canvas camera={{ position: [0, 0, 5] }}
+
+onCreated={(obj)=>{obj.gl.shadowMap.enabled= true;
+
+obj.gl.shadowMap.type = THREE.PCFSoftShadowMap
+}}
+  >
+    <ambientLight intensity={0.5}/>
+    <spotLight position={[15, 20, 5]} penumbra={1} castShadow />
+    <fog attach="fog" args={"black", 10, 25} />
     <Controls />
     <Box />
-    <Plane />
+   // <Plane />
+
+    <SpaceShip />
   </Canvas>
+
+  </>
 )
